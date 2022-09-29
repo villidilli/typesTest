@@ -14,11 +14,12 @@ public class Praktikum {
         System.out.println("Давно тебя не было в Яндекс.Гонках!");
         System.out.println("Характеристики твоего автомобиля:");
         // Напечайте характеристики автомобиля игрока
-        System.out.println("- Максимальная скорость: " + ...);
-        System.out.println("- Ускорение: " + ...);
-        System.out.println("- Закись азота: " + ...);
+        System.out.println("- Максимальная скорость: " + userCar.maxSpeed);
+        System.out.println("- Ускорение: " + userCar.acceleration);
+        System.out.println("- Закись азота: " + userCar.nitroLevel);
 
         Scanner scanner = new Scanner(System.in);
+        // Меню действий
         while (true) {
             System.out.println("Что выберете?");
             System.out.println("1 - Устроить заезд");
@@ -30,55 +31,55 @@ public class Praktikum {
                 Car opponentCar = generateOpponentCar();
                 System.out.println("Характеристики автомобиля соперника:");
                 // Напечайте характеристики автомобиля соперника
-                System.out.println("- Максимальная скорость: " + ...);
-                System.out.println("- Ускорение: " + ...);
-                System.out.println("- Закись азота: " + ...);
+                System.out.println("- Максимальная скорость: " + opponentCar.maxSpeed);
+                System.out.println("- Ускорение: " + opponentCar.acceleration);
+                System.out.println("- Закись азота: " + opponentCar.nitroLevel);
 
                 int distance = generateInt(5, 70);
                 System.out.println("Гонка будет проходить на дистанции: " + distance + " км.");
 
                 int points = makeRace(userCar, opponentCar, distance);
-                changePointAndDistance(...); // передайте в метод аргументы
+                changePointAndDistance(points, distance, userCar); // передайте в метод аргументы
 
             } else if (command == 2) {
                 // Напечайте количество заработанных очков и пройденных километров
-                System.out.println("- Количество заработанных очков: " + ...);
-                System.out.println("- Пройдено километров на этом авто: " + ...);
+                System.out.println("- Количество заработанных очков: " + userCar.score);
+                System.out.println("- Пройдено километров на этом авто: " + userCar.kilometersTravelled);
             } else if (command == 3) {
                 System.out.println("Увидимся!");
                 break;
             }
         }
     }
-
-    private static void changePointAndDistance(...) { // реализуйте метод
+    private static void changePointAndDistance(int pointsAfterRace, int distanceAfterRace, Car userCar) { // передали итоги гонки (очки и дистанцию)
+        userCar.score += pointsAfterRace;
+        userCar.kilometersTravelled += distanceAfterRace;
+        // реализуйте метод
         // В результате выполнения метода у userCar количество очков должно увеличиться 
         // на значение points, пройденное расстояние - на значение distance.
-        ... 
     }
 
     private static int makeRace(Car userCar, Car opponentCar, int distance) {
         printFlag();
         // Напишите логические выражения для определения победителя
-        boolean shortRaceWin = ... // на короткой дистанции
-        boolean longRaceWin = ... // на длинной дистанции
+        boolean shortRaceWin = distance <= 15; // на короткой дистанции
+        boolean longRaceWin = distance > 50; // на длинной дистанции
 
-        if (...) { // если победил на короткой или на длинной дистанции
+        if ((shortRaceWin && (userCar.acceleration > opponentCar.acceleration)) || (longRaceWin && (userCar.maxSpeed > opponentCar.maxSpeed))) { // если победил на короткой или на длинной дистанции
             System.out.println("Вы выиграли!");
             // Найдите и верните наибольшее из максимальных скоростей
-            ...
-            return ...;
-        } else if (...) { // Уровни ускорения должны быть равны
+            return (int) Double.max(userCar.maxSpeed, opponentCar.maxSpeed);
+        } else if (userCar.acceleration == opponentCar.acceleration) { // Уровни ускорения должны быть равны
             System.out.println("Ничья!");
-            return ...
+            return 0;
         } else {
             // Сравните уровни закиси азота
-            if (...) {
+            if(opponentCar.nitroLevel < userCar.nitroLevel) {
                 System.out.println("Вы проиграли, но благодаря закиси азота сохранили очки.");
-                return ...;
+                return 0;
             } else {
                 System.out.println("Вы проиграли(");
-                return ...;
+                return -100;
             }
         }
     }
@@ -111,17 +112,19 @@ public class Praktikum {
 
     // Этот метод создаёт случайное число в промежутке от from до to
     private static int generateInt(int from, int to) { 
-        int diapason = to - from;
-        int offence = new Random().nextInt(diapason);
-        return from + offence;
+        int diapason = to - from; // допустимый диапазон
+        int offence = new Random().nextInt(diapason); // генерирует рандомное число из диапазона
+        return from + offence; // возвращает сумму начала диапазона + рандомное число
     }
 
+
+     //Метод создает машину на основании параметров по-умолчанию
     private static Car createCarByProperties(CarProperties carProperties) {
         // Конвертируйте параметры в нужные типы
-        double maxSpeed = ...;
-        float acceleration = ...;
-        int score = ...;
-        Integer nitroLevel = ...;
+        double maxSpeed = Double.parseDouble(carProperties.maxSpeed);
+        float acceleration = (float) carProperties.acceleration;
+        int score = carProperties.initialScore;
+        Integer nitroLevel = getNitroLevel(carProperties.nitroLevel);
 
         return new Car( // Метод возвращает экземпляр класса Car
                 maxSpeed,
@@ -133,6 +136,10 @@ public class Praktikum {
 
     private static Integer getNitroLevel(int nitroLevel) {
         // Пропишите логику по конвертации параметра nitroLevel
-        ...
+        if(nitroLevel == 0) {
+            return null;
+        } else {
+            return nitroLevel;
+        }
     }
 }
